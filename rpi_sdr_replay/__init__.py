@@ -153,7 +153,7 @@ class ReplayerBluetoothUI(object):
         sys_bus = dbus.SystemBus()
         ck_srv = sys_bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1')
         ck_iface = dbus.Interface(ck_srv, 'org.freedesktop.login1.Manager')
-        can =  ck_iface.get_dbus_method("CanPowerOff")()
+        can = ck_iface.get_dbus_method("CanPowerOff")()
         if not can:
             print("You cannot shutdown this system! (Update polkit policy to allow you org.freedesktop.login1.power-off)")
             return False

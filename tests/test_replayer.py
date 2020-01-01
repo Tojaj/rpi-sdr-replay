@@ -53,7 +53,7 @@ class TestReplayerBluetoothUI(unittest.TestCase):
 
         ui = rpi_sdr_replay.ReplayerBluetoothUI(replayer_mock, bd_mock)
 
-        replayer_mock.get_available_recordings.return_value=[]
+        replayer_mock.get_available_recordings.return_value = []
         ui._update_recordings()
         replayer_mock.get_available_recordings.assert_called()
         self.assertEqual(len(ui._recordings), 0)

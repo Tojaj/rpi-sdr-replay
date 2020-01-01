@@ -1,0 +1,4 @@
+__pycache__
+venv
+rpi_sdr_replay.egg-info
+*.pyc

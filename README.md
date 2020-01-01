@@ -1,0 +1,262 @@
+rpi-sdr-replay
+==============
+
+**Turns Raspberry Pi into a remotely controlled software Defined Radio (SDR)
+transceiver that captures and replays radio signals.**
+
+Use your Android smartphone to control when the radio signal recording should start,
+when it should end and then replay it on your discretion. 
+
+
+Usage
+=====
+
+Command line (The server part)
+-----------------------------
+
+TBD
+
+Graphical SmartPhone BlueDot app interface (The client part)
+------------------------------------------------------------
+
+TBD
+
+
+Hardware requirements
+=====================
+
+* Raspberry Pi with Bluetooth ([that supports rpitx](https://github.com/F5OEO/rpitx#hardware))
+  * I use **RaspberryPi Zero WH**
+* RTL-SDR dongle
+  * There are multiple ones
+  * I use [RTL-SDR V3](https://www.rtl-sdr.com)
+
+
+Setup
+=====
+
+Raspbian packages
+-----------------
+
+    $ sudo apt install \
+        build-essential \
+        python3-dbus \
+        python3-pip \
+        git \
+        rtl-sdr
+
+
+Python libraries
+----------------
+
+*Note: Before you install python modules by pip, you should consider
+use of a python virtual environments. See next section of this readme.*
+
+    $ pip install -r requirements.txt
+
+
+RTL-SDR setup
+-------------
+
+Raspbian system packages got installed in one of previous steps when
+**rtl-sdr** package was installed.
+
+Now you need to **blacklist default kernel modules with drivers for RTL-SDR**
+chipset that are used for DVB-T decoding.
+
+Depending on the chipset your dongle has, you need to blacklist the correct
+kernel module. If you are not sure, you can uncomment all names and blacklist
+all of them:
+
+    $ sudo vim /etc/modprobe.d/blacklist-rtl-sdr-dvbt-modules.conf
+
+And add:
+
+    blacklist dvb_usb_rtl28xxu
+    blacklist 8192cu
+    blacklist rtl8xxxu
+    #blacklist rtl2832
+    #blacklist rtl2830
+
+Note: Make sure you removed the hash symbol ``#`` from the beggining of the
+line that lists the name of kernel module for chipset of your RTL-SDR dongle.
+In this example I only blacklist a sub-set of them.
+
+Once done, try to plug in the dongle and run this command to test it:
+
+    $ rtl_test
+
+
+rpitx setup
+-----------
+
+rpitx is a general radio frequency transmitter for Raspberry Pi which doesn't
+require any other hardware unless filter to avoid intererence. It can handle
+frequencies from 5 KHz up to 1500 MHz.
+
+Project repository: https://github.com/F5OEO/rpitx
+
+Installation instructions:
+
+    $ git clone https://github.com/F5OEO/rpitx
+    $ cd rpitx
+    $ ./install.sh
+    $ sudo reboot
+
+
+Bluetooth permissions
+---------------------
+
+    $ sudo vim /etc/dbus-1/system.d/bluetooth.conf
+
+Add this section (assuming your user is "pi"):
+
+      <policy user="pi">
+        <allow own="org.bluez"/>
+        <allow send_destination="org.bluez"/>
+        <allow send_interface="org.bluez.Agent1"/>
+        <allow send_interface="org.bluez.MediaEndpoint1"/>
+        <allow send_interface="org.bluez.MediaPlayer1"/>
+        <allow send_interface="org.bluez.Profile1"/>
+        <allow send_interface="org.bluez.GattCharacteristic1"/>
+        <allow send_interface="org.bluez.GattDescriptor1"/>
+        <allow send_interface="org.bluez.LEAdvertisement1"/>
+        <allow send_interface="org.freedesktop.DBus.ObjectManager"/>
+        <allow send_interface="org.freedesktop.DBus.Properties"/>
+      </policy>
+
+Restart dbus:
+
+    $ sudo systemctl restart dbus
+
+
+Raspberry Pi and Android Phone pairing
+--------------------------------------
+
+**On Raspberry command line:**
+
+    $ bluetoothctl
+    discoverable on
+    pairable on
+    agent on
+    default-agent
+
+Note: You will need to confirm the pairing there in the console once you
+attempt to pair with the Raspberry Pi from your phone (see the next section).
+
+**On your Android phone:**
+
+* Enable Bluetooth and search for a new device.
+  * The name will be most likely "**raspberrypi**" and its MAC address
+    must match the MAC address reported by the bluetoothctl after
+    you run ``discoverable on``.
+* Pair your phone and the Raspberry Pi device.
+
+Once the devices are paired, quit the bluetoothctl console by pressing
+``Ctrl + D``.
+
+Blue Dot Android app
+--------------------
+
+Install the [**Blue Dot**](https://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot)
+from Google Play store.
+
+Once you run the app, you should be able to select the correct bluetooth
+device (the raspberry you paired in the previous step).
+
+Test Blue Dot setup
+-------------------
+
+Run this on your Raspberry:
+
+    $ python3
+
+    from bluedot import BlueDot
+    bd = BlueDot()
+    bd.wait_for_press()
+    print("Button was pressed!")
+
+Then run the Blue Dot app on your smartphone, select the raspberry from the
+list of paired devices and after a connection is made, press the blue button!
+The code adobe should print out a message "Button was pressed!" once once
+the blue button is pressed.
+
+
+Policy kit permissions to Turn Off (Shut Down) the system
+---------------------------------------------------------
+
+The app allows you to properly turn off the Raspberry Pi system, but to be
+able to do that, the user running the application must have permissions
+to do that. To configure that permissions, do the following:
+
+Create and edit a PolicyKit permission:
+
+    $ sudo vim /etc/polkit-1/localauthority/50-local.d/allow_all_users_to_shutdown.pkla
+
+And add there:
+
+    [Allow all users to shutdown]
+    Identity=unix-user:*
+    Action=org.freedesktop.login1.power-off;org.freedesktop.login1.power-off-multiple-sessions
+    ResultActive=yes
+    ResultAny=yes
+
+Reload the PolicyKit:
+
+    sudo systemctl daemon-reload
+
+
+Installation in virtual env
+===========================
+
+**1)** Install all necessary packages:
+
+    sudo apt-get install virtualenv virtualenvwrapper
+
+**2)** Add the next two lines at the bottom of your ``~/.profile`` file:
+
+    export WORKON_HOME=~/.virtualenvs
+    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+
+Note: If you have ~/.bash_profile file, then you need to add it there
+as in that case the ``~/.profile`` won't be read.
+
+**3)** Create a virtual env
+
+    mkvirtualenv \
+        --system-site-packages \
+        --python=/usr/bin/python3 \
+        rpi-sdr-replay
+
+Note: We are allowing system site python packages to be available in our
+virtual env here.
+
+**When you are ready to work** on the new virtual env
+
+    workon rpi-sdr-replay
+
+**Once you are done** deactivate the virtual env
+
+    deactivate
+
+
+Debugging
+=========
+
+Bluetooth
+---------
+
+Bluetooth live debugging:
+
+    sudo btmon
+
+Some other tips for bluetooth debugging:
+https://fedoraproject.org/wiki/How_to_debug_Bluetooth_problems
+
+RTL-SDR
+-------
+
+Test RTL-SDR dongle
+
+    rtl_test
+

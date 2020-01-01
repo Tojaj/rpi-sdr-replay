@@ -1,0 +1,11 @@
+language: python
+python:
+    - "3.6"
+    - "3.7"
+install:
+    - pip install -U pip mock flake8 coverage coveralls bluedot
+script:
+    - flake8 .
+    - coverage run --source=rpi_sdr_replay setup.py test
+after_success:
+    - coveralls

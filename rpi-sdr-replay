@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-# TODO:
-# * Add a config file
-# * Get rid of need of sudo for replay
-# * Disclaimer about licensed frequencies
-# * Check min and max allowed frequency
-
 import sys
 import os.path
 import argparse
@@ -90,6 +84,6 @@ if __name__ == "__main__":
         print(f"Cannot setup a bluetooth server: {err}")
         sys.exit(1)
 
-    replayer = Replayer(args.dir, args.rx_frequency, args.tx_frequency)
+    replayer = Replayer(args.dir, rx_freq, tx_freq)
     ui = ReplayerBluetoothUI(replayer, bd, args.allow_pairing)
     ui.run()

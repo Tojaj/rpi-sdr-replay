@@ -18,25 +18,32 @@ FN_SUFFIX = ".rec"
 FN_PATTERN = f"%y%m%d-%H%M%S.{FN_SUFFIX}"
 
 
-class Replayer(object):
+class ReplayerException(Exception):
+    """Exception raised by Replayer class that handles radio capturing and transmission."""
+    pass
 
-    def __init__(self, directory, rx_freq=FREQUENCY, tx_freq=FREQUENCY):
+
+class Replayer(object):
+    """Replayer class handles radio capturing and transmission (replay)."""
+
+    def __init__(self, directory, rx_freq=FREQUENCY, tx_freq=FREQUENCY) -> None:
         self.directory = directory
         self.rx_freq = rx_freq
         self.tx_freq = tx_freq
 
-        self._recording_in_progress = False
-        self._transmission_in_progress = False
+        self._recording_in_progress = None
+        self._transmission_in_progress = None
 
-    def get_available_recordings(self):
+    def get_available_recordings(self) -> list:
         """Returns sorted list of available recordings, the newest recording is the first."""
         pattern = os.path.join(self.directory, f"*{FN_SUFFIX}")
         return sorted(glob.glob(pattern), reverse=True)
 
     def start_recording(self) -> str:
         """Start recording and return a filename."""
+
         if self._recording_in_progress is not None:
-            return False  # Exception here
+            raise ReplayerException("One recording is already in progress!")
 
         filename = time.strftime(FN_PATTERN)
 
@@ -49,26 +56,39 @@ class Replayer(object):
             filename
         ]
 
+        # TODO: In future use shlex.join (Added in Python 3.8)
+        print(f"Starting: {' '.join(command)}")
+
         self._recording_in_progress = subprocess.Popen(command)
 
         return filename
 
-    def stop_recording(self):
-        """Stop the ongoing recording."""
+    def stop_recording(self) -> bool:
+        """Stop the ongoing recording.
+
+        :returns: True if recording command return code was success, False otherwise."""
+
         if self._recording_in_progress is None:
-            return False  # Exception here
+            raise ReplayerException("No recording in progress!")
 
         self._recording_in_progress.terminate()
         self._recording_in_progress.wait()
-        # TODO: Check for errors
+        print(f"Recording return code: {self._recording_in_progress.returncode}")
         self._recording_in_progress = None
 
-    def start_replay(self, filename):
+        if self._recording_in_progress.returncode != 0:
+            return False
+
+        return True
+
+    def start_replay(self, filename) -> None:
+        """Start radio replay of the recording specified by the filename"""
+
         if self._transmission_in_progress is not None:
-            return False  # Exception here
+            raise ReplayerException("One transmission is already in progress!")
 
         command = [
-            "sudo",  # TODO: Get rid of sudo here
+            "sudo",
             "/usr/bin/sendiq",
             "-s",
             f"{SAMPLING}",
@@ -80,30 +100,47 @@ class Replayer(object):
             filename
         ]
 
-        self._transmission_in_progress = subprocess.Popen(command)
+        # TODO: In future use shlex.join (Added in Python 3.8)
+        print(f"Starting: {' '.join(command)}")
 
-    def stop_replay(self):
-        if self._transmission_in_progress is not None:
-            return False  # Exception here
+        self._transmission_in_progress = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def stop_replay(self) -> bool:
+        """Stop ongoing replay
+
+        :returns: True if replay command return code was success, False otherwise."""
+
+        if self._transmission_in_progress is None:
+            raise ReplayerException("No transmission in progress!")
 
         self._transmission_in_progress.terminate()
+        return self.wait_replay()
+
+    def wait_replay(self) -> bool:
+        """Wait until the ongoing replay is over
+
+        :returns: True if replay command return code was success, False otherwise."""
+
+        if self._transmission_in_progress is None:
+            raise ReplayerException("No transmission in progress!")
+
         self._transmission_in_progress.wait()
-        # TODO: Check for errors
+        print(f"Replay return code: {self._transmission_in_progress.returncode}")
         self._transmission_in_progress = None
 
-    def wait_replay(self):
-        if self._transmission_in_progress is not None:
-            return False  # Exception here
+        if self._transmission_in_progress.returncode != 0:
+            return False
 
-        self._transmission_in_progress.wait()
-        self._transmission_in_progress = None
+        return True
 
 
 Recording = collections.namedtuple("Recording", ["filename", "color"])
 
 
 class ReplayerBluetoothUI(object):
+    """Class that handles the Bluetooth UI via the Blue Dot android app."""
 
+    # States
     _STATE_INIT = 0
     _STATE_LIST = 1
     _STATE_LIST_LAST = 2
@@ -111,7 +148,7 @@ class ReplayerBluetoothUI(object):
     _STATE_REPLAY = 4
     _STATE_SHUTDOWN = 5
 
-    def __init__(self, replayer, bd, pairing=False):
+    def __init__(self, replayer, bd, pairing=False) -> None:
         self.replayer = replayer
         self.bd = bd
         self.pairing = pairing
@@ -121,6 +158,9 @@ class ReplayerBluetoothUI(object):
         self._rec_pointer = 0
 
     def _update_recordings(self) -> None:
+        """Update internal list of available recordings.
+        It also generates an appropriate "greenish" color for each record."""
+
         recs = self.replayer.get_available_recordings()
         num = len(recs)
         if num == 0:
@@ -150,6 +190,10 @@ class ReplayerBluetoothUI(object):
         self._recordings = [Recording(*recording) for recording in zip(recs, colors)]
 
     def _shutdown(self) -> bool:
+        """Shut down the system via D-Bus and login1.
+
+        :returns: False if system cannot be turned off this way, True otherwise"""
+
         sys_bus = dbus.SystemBus()
         ck_srv = sys_bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1')
         ck_iface = dbus.Interface(ck_srv, 'org.freedesktop.login1.Manager')
@@ -159,8 +203,10 @@ class ReplayerBluetoothUI(object):
             return False
         print("Power off")
         ck_iface.get_dbus_method("PowerOff")(False)
+        return True
 
-    def pressed(self, pos) -> None:
+    def _pressed(self, pos) -> None:
+        """Method that handles a "blue" button press"""
 
         if self._state == self._STATE_INIT:
             if pos.middle:
@@ -239,9 +285,11 @@ class ReplayerBluetoothUI(object):
                 self._rec_pointer = 0
 
     def run(self) -> None:
+        """This method starts the bluetooth UI"""
+
         self._update_recordings()
 
-        self.bd.when_released = self.pressed
+        self.bd.when_released = self._pressed
 
         if self.pairing:
             print("Pairing..")

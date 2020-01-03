@@ -182,6 +182,30 @@ The code adobe should print out a message "Button was pressed!" once once
 the blue button is pressed.
 
 
+sudo access to /usr/bin/sendiq without password
+-----------------------------------------------
+
+The app is using ``/usr/bin/sendiq`` tool, that must be run as root (via ``sudo``).
+If you want to use this app, you must make sure the user that is running the server side
+has permission to run the ``sendiq`` tool via sudo without asking for password.
+
+There are multiple ways how to achieve that. By default in Raspbian, the default **"pi"** user
+usually has ability to use sudo without password for any command.
+
+If you have your own user that by default requires password for sudo, make sure you update
+your sudoers configuration to allow the ``/usr/bin/sendiq`` without the password:
+
+    $ sudo visudo
+
+and add a line (where "youruser" is the name of the user you use):
+
+    youruser ALL=(root) NOPASSWD: /usr/bin/sendiq
+
+Note: The better practice would be to create a new sudoers config file in ``/etc/sudoers.d/`` for
+this policy with a command like ``sudo visudo -f /etc/sudoers.d/010_sendiq-nopasswd`` instead of
+editing ``/etc/sudoers`` directly like I just showed you.
+    
+
 Policy kit permissions to Turn Off (Shut Down) the system
 ---------------------------------------------------------
 

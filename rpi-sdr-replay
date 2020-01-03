@@ -60,11 +60,13 @@ if __name__ == "__main__":
         if not os.path.exists(args.dir):
             os.mkdir(args.dir, mode=755)
 
+    # Check the specified directly
     if not os.path.exists(args.dir):
         parser.error(f"The path '{args.dir} doesn't exist!'")
     if not os.path.isdir(args.dir):
         parser.error(f"The path '{args.dir}' is not a directory!")
 
+    # Assign the frequencies
     rx_freq = args.frequency
     tx_freq = args.frequency
 
@@ -78,12 +80,22 @@ if __name__ == "__main__":
             parser.error(f"The '{args.tx_frequency}' is not an integer number")
         tx_freq = int(args.tx_frequency)
 
+    # Check the RX frequency (RTL-SDR dongles can handle between 500 kHz - 1.75 GHz)
+    if rx_freq < 500000 or rx_freq > 1750000000:
+        parser.error(f"RX frequency must be between 500000-1750000000 (You specified {rx_freq})")
+
+    # Check the TX frequency (rpitx can handle 5kHz - 1500MHz)
+    if tx_freq < 5000 or tx_freq > 1500000000:
+        parser.error(f"TX frequency must be between 5000-1500000000 (You specified {tx_freq})")
+
+    # Instantiate bluetooth interface
     try:
         bd = bluedot.BlueDot()
     except Exception as err:
         print(f"Cannot setup a bluetooth server: {err}")
         sys.exit(1)
 
+    # Run the bluetooth server and UI
     replayer = Replayer(args.dir, rx_freq, tx_freq)
     ui = ReplayerBluetoothUI(replayer, bd, args.allow_pairing)
     ui.run()

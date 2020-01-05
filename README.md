@@ -17,7 +17,22 @@ Usage
 Command line (The server part)
 -----------------------------
 
-TBD
+**Record and replay on 88,3 MHz (FM frequency)**
+
+    $ rpi-sdr-replay -f 88300000
+
+Note: Recordings are stored to a default location ``$HOME/sdr-recordings``
+
+
+**Record on 88,3 MHz and replay on 88,5 MHz**
+
+    $ /home/pi/git/rpi-sdr-replay/rpi-sdr-replay \
+        --rx-frequency 88300000 \
+        --tx-frequency 88500000 \
+        -d /home/pi/sdr-recordings-fm/
+
+Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`` (the directory must exist!).
+
 
 Graphical SmartPhone BlueDot app interface (The client part)
 ------------------------------------------------------------

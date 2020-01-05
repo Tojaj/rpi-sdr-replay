@@ -116,15 +116,19 @@ class Replayer(object):
         self._transmission_in_progress.terminate()
         return self.wait_replay()
 
-    def wait_replay(self) -> bool:
+    def wait_replay(self, timeout=None) -> bool:
         """Wait until the ongoing replay is over
+
+        If the process does not terminate after "timeout" seconds, raise
+        a TimeoutExpired exception. It is safe to catch this exception and
+        retry the wait.
 
         :returns: True if replay command return code was success, False otherwise."""
 
         if self._transmission_in_progress is None:
             raise ReplayerException("No transmission in progress!")
 
-        self._transmission_in_progress.wait()
+        self._transmission_in_progress.wait(timeout)
         print(f"Replay return code: {self._transmission_in_progress.returncode}")
         self._transmission_in_progress = None
 

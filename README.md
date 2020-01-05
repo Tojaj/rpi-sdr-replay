@@ -62,13 +62,24 @@ Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`
 Graphical SmartPhone BlueDot app interface (The client part)
 ------------------------------------------------------------
 
-The Blue Dot application only allow us to have a UI with one dot (or square)
-and control its color and border. That's it, that's the whole user interface.
+The Blue Dot application that was used as Smartphone UI only allow us to have a 
+UI with one dot (or square) and control its color and border and that's it.
 
-The interface for rpi-sdr-replay is based on differently colored dots and
-this section explains it.
-The dot color will tell you what state/screen you are at and
-defines what could be done.
+That said the user interface for rpi-sdr-replay (that uses the Blue Dot) is
+based on differently colored dots that define state of the application.
+The dot color tells you in what state the app is and defines what actions could
+be done.
+
+The dot itself is clickable and rpi-sdr-replay application recognizes several
+"zones" that works like "buttons". Here is the schema of the dot zones:
+
+![bluedot-zones](doc/bluedot-clickable-zones.png)
+
+Actions triggered by the individual zones depends on the state of the application
+which is described by the color of the dot.
+See the next section that describes the individual states (dot colors) and their
+clickable zones. Not all states use all zones.
+ 
 
 ### Blue Dot app connect menu
 
@@ -137,7 +148,7 @@ get's more lighter ("greyish").
 
 ### (Black dot) Turn off screen
 
-* **Middle** to confirm the shutdown
+* **Middle** to confirm the operating system shutdown (Turns off the whole Raspberry Pi!)
 * **Left/Right/Bottom/Top** cancel the shutdown and go back to the main screen (blue dot)
 
 ![bluedot-09](doc/bluedot-09-shutdown.png)

@@ -46,6 +46,7 @@ class Replayer(object):
             raise ReplayerException("One recording is already in progress!")
 
         filename = time.strftime(FN_PATTERN)
+        path = os.path.join(self.directory, filename)
 
         command = [
             "/usr/bin/rtl_sdr",
@@ -53,7 +54,7 @@ class Replayer(object):
             f"{SAMPLING}",
             "-f",
             f"{self.rx_freq}",
-            filename
+            path
         ]
 
         # TODO: In future use shlex.join (Added in Python 3.8)
@@ -61,7 +62,7 @@ class Replayer(object):
 
         self._recording_in_progress = subprocess.Popen(command)
 
-        return filename
+        return path
 
     def stop_recording(self) -> bool:
         """Stop the ongoing recording.

@@ -14,7 +14,7 @@ import bluedot
 
 SAMPLING = 250000  # Hz
 FREQUENCY = 433050000  # Hz
-FN_SUFFIX = ".rec"
+FN_SUFFIX = "rec"
 FN_PATTERN = f"%y%m%d-%H%M%S.{FN_SUFFIX}"
 
 

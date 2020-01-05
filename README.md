@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/Tojaj/pdc-release-migration-tool.svg?branch=master)](https://travis-ci.org/Tojaj/rpi-sdr-replay)
+[![Coverage Status](https://coveralls.io/repos/github/Tojaj/rpi-sdr-replay/badge.svg?branch=master)](https://coveralls.io/github/Tojaj/rpi-sdr-replay?branch=master)
+
 rpi-sdr-replay
 ==============
 

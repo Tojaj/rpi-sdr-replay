@@ -11,6 +11,9 @@ Use your Android smartphone to control when the radio signal recording should st
 when it should end and then replay it on your discretion. 
 
 
+![rpi-sdr-replay-setup-photo](doc/rpi-sdr-replay-setup-overview.jpg)
+
+
 Usage
 =====
 

@@ -62,7 +62,85 @@ Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`
 Graphical SmartPhone BlueDot app interface (The client part)
 ------------------------------------------------------------
 
-TBD
+The Blue Dot application only allow us to have a UI with one dot (or square)
+and control its color and border. That's it, that's the whole user interface.
+
+The interface for rpi-sdr-replay is based on differently colored dots and
+this section explains it.
+The dot color will tell you what state/screen you are at and
+defines what could be done.
+
+### Blue Dot app connect menu
+
+Select your Raspberry Pi device you paired from the list:
+
+![bluedot-01](doc/bluedot-01-connect-menu.png)
+
+### (Blue dot) Main screen
+
+* **Middle** to start recording
+* **Left** to go to the latest available recording
+* **Bottom** to open "turn off" screen (black dot)
+
+![bluedot-02](doc/bluedot-02-ready-to-record.png)
+
+### (Red dot) Recording in progress
+
+* **Press anywhere on the dot** to stop the recording
+
+![bluedot-03](doc/bluedot-03-recording-in-progress.png)
+
+### (Bright green dot) Latest recording
+
+* **Middle** to replay the recording
+* **Left** to go to previous (older) recording
+* **Right** to go back to the main screen (blue dot)
+* The latest (newest) recording is always this bright green 
+
+![bluedot-04](doc/bluedot-04-latest-record.png)
+
+### (Dark green dot) Latest-1 recording
+
+* **Middle** to replay the recording
+* **Left** to go to previous (older) recording
+* **Right** to go to newer recording
+* Note: Except of the latest recording that is bright green all other
+recordings are dark green and then the older the recording is, its color
+get's more lighter ("greyish"). 
+
+![bluedot-05](doc/bluedot-05-latest-1-record.png)
+
+### (Greyish dark green dot) Latest-2 recording
+
+* **Middle** to replay the recording
+* **Left** to go to previous (older) recording
+* **Right** to go to newer recording
+* Note: Except of the latest recording that is bright green all other
+recordings are dark green and then the older the recording is, its color
+get's more lighter ("greyish"). 
+
+![bluedot-06](doc/bluedot-06-latest-2-record.png)
+
+### (White dot with border) No more old recordings available
+
+* **Right** to go to newer recording
+* If there are no more recordings the dot is white and has a border.
+
+![bluedot-07](doc/bluedot-07-no-more-records.png)
+
+### (No dot shown) Recording is being replayed
+
+* No dot is displayed
+* You need to wait till full recording is replayed
+
+![bluedot-08](doc/bluedot-08-replaying.png)
+
+### (Black dot) Turn off screen
+
+* **Middle** to confirm the shutdown
+* **Left/Right/Bottom/Top** cancel the shutdown and go back to the main screen (blue dot)
+
+![bluedot-09](doc/bluedot-09-shutdown.png)
 
 
 Hardware requirements
@@ -78,8 +156,12 @@ Hardware requirements
 Setup
 =====
 
-Raspbian packages
------------------
+**Note:** The setup described in this readme is written for **Raspbian**. Different Linux
+distribution may have differently named packages and may require different approach to configuration.
+
+
+Raspbian system packages
+------------------------
 
     $ sudo apt install \
         build-essential \

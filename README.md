@@ -17,40 +17,42 @@ when it should end and then replay it on your discretion.
 Usage
 =====
 
-Rpi-sdr-replay, is composed from two parts:
+**rpi-sdr-replay** is composed from two parts:
 
-**Server part** is this rpi-sdr-replay application. It can record and replay radio
+**1) Server part** is this rpi-sdr-replay python library and application. It can record and replay radio
 signals on configurable radio frequencies (with this tool, you can record signal on
 one radio frequency and replay it on another radio frequency). The recording and
-replaying is triggered manually by user on his discretion via Bluetooth client app.  
+replaying is triggered manually by user on his discretion via a Bluetooth app.
 
-**Client part (Android smartphone app)** is a generic Blue Dot application that is available
-in Google Play Store.
+**2) Client part (Android smartphone app)** is a generic [Blue Dot](https://bluedot.readthedocs.io/en/latest/)
+application that is available in [Google Play Store](https://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot).
 It doesn't require any special configuration in order to be used with rpi-sdr-replay
 server part. Only requirement is that the smartphone running the Blue Dot and the
-Raspberry Pi running rpi-sdr-replay are paired (how to do that is described in this doc). 
+Raspberry Pi running the rpi-sdr-replay are paired (how to do that is described later in this readme).
  
 **Main features**
 
-* You can record a radio transmission and replay it whenever you want (seconds, minutes, days, moths later). 
-* You can record a radio transmission on one frequency and replay it on another frequency.
-* You can control the recording and replaying remotely via Bluetooth.
-* You don't need Wi-Fi connection with the Raspberry Pi when using and controlling the recording/replaying.
-** The recording and replaying is done just via Bluetooth, you don't need any kind of ssh or
-   a similar connection to your Raspberry Pi system.
-* If you use a power bank to power your Raspberry Pi device, then you can walk around the world and
+* Record a radio transmission and replay it whenever you want (seconds, minutes, days, months later).
+* Record a radio transmission on one frequency and replay it on another frequency.
+* Control the recording and replaying remotely via Bluetooth.
+* No need of Wi-Fi connection with the Raspberry Pi when using and controlling the recording/replaying.
+  * The recording and replaying is controlled just via Bluetooth, you don't need any kind of ssh or
+     a similar connection to your Raspberry Pi system for this to work.
+* No need of a display or any extra user interface hardware for the Raspberry Pi.
+* If you use a power bank to power your Raspberry Pi device, you can walk around the world and
   record/replay radio signals freely.
   
 **Disclaimer:** Different radio frequencies have different terms for usage. Always consult
-your local laws and legal obligations for specific frequencies! Be careful to not cause any
-noise / jamming on any frequencies.
+your local laws and legal obligations for usage of specific frequencies.
+Some frequencies are licensed and cannot be used.
+Be considerate and do not cause noise on any frequencies.
 For transmitting, you are supposed to use an antenna with a proper band-pass filter!
 
 
 Command line (The server part)
 -----------------------------
 
-**Record and replay on 88,3 MHz (FM frequency)**
+**Record and replay signals on 88,3 MHz (FM frequency)**
 
     $ rpi-sdr-replay -f 88300000
 
@@ -67,7 +69,7 @@ Note: Recordings are stored to a default location ``$HOME/sdr-recordings``
 Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`` (the directory must exist!).
 
 
-**See help (--help/-h) for details**
+**See help for details (--help/-h)**
 
     $ rpi-sdr-replay --help
     usage: rpi-sdr-replay [-h] [-f FREQUENCY] [-r RX_FREQUENCY] [-t TX_FREQUENCY]
@@ -92,59 +94,60 @@ Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`
 Graphical SmartPhone BlueDot app interface (The client part)
 ------------------------------------------------------------
 
-The Blue Dot application that was used as Smartphone UI only allow us to have a 
-UI with one dot (or square) and control its color and border and that's it.
+The Blue Dot application that is used as a smartphone UI only allow us to have a
+UI with one dot (or square) and control its color and that's it.
 
-That said the user interface for rpi-sdr-replay (that uses the Blue Dot) is
+That said, the user interface for rpi-sdr-replay (that uses the Blue Dot) is
 based on differently colored dots that define state of the application.
 The dot color tells you in what state the app is and defines what actions could
 be done.
 
 The dot itself is clickable and rpi-sdr-replay application recognizes several
-"zones" that works like "buttons". Here is the schema of the dot zones:
+"zones" that works like "buttons".
+Here is a schema of the zones:
 
 ![bluedot-zones](doc/bluedot-clickable-zones.png)
 
 Actions triggered by the individual zones depends on the state of the application
 which is described by the color of the dot.
 See the next section that describes the individual states (dot colors) and their
-clickable zones. Not all states use all zones.
+clickable zones. Not all application states use all zones.
  
 
 ### Blue Dot app connect menu
 
-Select your Raspberry Pi device you paired from the list:
+Select your Raspberry Pi device from the list (it must be paired):
 
 ![bluedot-01](doc/bluedot-01-connect-menu.png)
 
 ### (Blue dot) Main screen
 
-* **Middle** to start recording
-* **Left** to go to the latest available recording
-* **Bottom** to open "turn off" screen (black dot)
+* **Middle** to start recording (Red dot)
+* **Left** to go to the latest available recording (Bright green dot)
+* **Bottom** to open "turn off" screen (Black dot)
 
 ![bluedot-02](doc/bluedot-02-ready-to-record.png)
 
 ### (Red dot) Recording in progress
 
-* **Press anywhere on the dot** to stop the recording
+* **Press anywhere on the dot** to stop the recording (Bright green dot)
 
 ![bluedot-03](doc/bluedot-03-recording-in-progress.png)
 
 ### (Bright green dot) Latest recording
 
-* **Middle** to replay the recording
-* **Left** to go to previous (older) recording
-* **Right** to go back to the main screen (blue dot)
-* The latest (newest) recording is always this bright green 
+* **Middle** to replay the recording (No dot shown)
+* **Left** to go to older recording (Dark green dot)
+* **Right** to go back to the main screen (Blue dot)
+* The latest (newest) recording always has this bright green color.
 
 ![bluedot-04](doc/bluedot-04-latest-record.png)
 
 ### (Dark green dot) Latest-1 recording
 
-* **Middle** to replay the recording
-* **Left** to go to previous (older) recording
-* **Right** to go to newer recording
+* **Middle** to replay the recording (No dot shown)
+* **Left** to go to older recording (Greyish dark green dot)
+* **Right** to go to newer recording (Bright green dot)
 * Note: Except of the latest recording that is bright green all other
 recordings are dark green and then the older the recording is, its color
 get's more lighter ("greyish"). 
@@ -153,19 +156,20 @@ get's more lighter ("greyish").
 
 ### (Greyish dark green dot) Latest-2 recording
 
-* **Middle** to replay the recording
-* **Left** to go to previous (older) recording
-* **Right** to go to newer recording
+* **Middle** to replay the recording (No dot shown)
+* **Left** to go to older recording (Even more greyish-dark-green dot)
+* **Right** to go to newer recording (Dark green dot)
 * Note: Except of the latest recording that is bright green all other
 recordings are dark green and then the older the recording is, its color
-get's more lighter ("greyish"). 
+get's more lighter ("greyish").
+
+And so on for all other Latest-N recordings..
 
 ![bluedot-06](doc/bluedot-06-latest-2-record.png)
 
 ### (White dot with border) No more old recordings available
 
 * **Right** to go to newer recording
-* If there are no more recordings the dot is white and has a border.
 
 ![bluedot-07](doc/bluedot-07-no-more-records.png)
 
@@ -179,7 +183,7 @@ get's more lighter ("greyish").
 ### (Black dot) Turn off screen
 
 * **Middle** to confirm the operating system shutdown (Turns off the whole Raspberry Pi!)
-* **Left/Right/Bottom/Top** cancel the shutdown and go back to the main screen (blue dot)
+* **Left/Right/Bottom/Top** cancel the shutdown and go back to the main screen (Blue dot)
 
 ![bluedot-09](doc/bluedot-09-shutdown.png)
 
@@ -192,7 +196,9 @@ Hardware requirements
 * RTL-SDR dongle
   * There are multiple ones
   * I use [RTL-SDR V3](https://www.rtl-sdr.com)
-
+* RX & TX Antennas
+  * Antennas that fits your needs
+* (Optional) Power bank
 
 Setup
 =====
@@ -216,7 +222,8 @@ Python libraries
 ----------------
 
 *Note: Before you install python modules by pip, you should consider
-use of a python virtual environments. See next section of this readme.*
+use of a python virtual environments (especially for development).
+See later section of this readme.*
 
     $ pip3 install -r requirements.txt
 
@@ -273,6 +280,9 @@ Installation instructions:
 Bluetooth permissions
 ---------------------
 
+rpi-sdr-replay requires permissions to be able to control Bluetooth interface.
+This section shows you how to configure the permissions:
+
     $ sudo vim /etc/dbus-1/system.d/bluetooth.conf
 
 Add this section (assuming your user is "pi"):
@@ -296,8 +306,8 @@ Restart dbus:
     $ sudo systemctl restart dbus
 
 
-Raspberry Pi and Android Phone pairing
---------------------------------------
+Bluetooth pairing (Raspberry Pi & Android Phone )
+-------------------------------------------------
 
 **On Raspberry command line:**
 
@@ -308,7 +318,7 @@ Raspberry Pi and Android Phone pairing
     default-agent
 
 Note: You will need to confirm the pairing there in the console once you
-attempt to pair with the Raspberry Pi from your phone (see the next section).
+attempt to pair with the Raspberry Pi from your phone (see the next step).
 
 **On your Android phone:**
 
@@ -317,9 +327,9 @@ attempt to pair with the Raspberry Pi from your phone (see the next section).
     must match the MAC address reported by the bluetoothctl after
     you run ``discoverable on``.
 * Pair your phone and the Raspberry Pi device.
+  * Confirm the pairing on both devices.
 
-Once the devices are paired, quit the bluetoothctl console by pressing
-``Ctrl + D``.
+Once the devices are paired, quit the bluetoothctl console by pressing ``Ctrl + D``.
 
 Blue Dot Android app
 --------------------
@@ -327,11 +337,11 @@ Blue Dot Android app
 Install the [**Blue Dot**](https://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot)
 from Google Play store.
 
-Once you run the app, you should be able to select the correct bluetooth
-device (the raspberry you paired in the previous step).
+Once you run the app, you should be able to see the Raspberry Pi
+device you paired in the previous step.
 
-Test Blue Dot setup
--------------------
+(Optional) Test Blue Dot setup
+------------------------------
 
 Run this on your Raspberry:
 
@@ -342,44 +352,45 @@ Run this on your Raspberry:
     bd.wait_for_press()
     print("Button was pressed!")
 
-Then run the Blue Dot app on your smartphone, select the raspberry from the
+Then run the Blue Dot app on your smartphone, select the Raspberry from the
 list of paired devices and after a connection is made, press the blue button!
-The code adobe should print out a message "Button was pressed!" once once
-the blue button is pressed.
+The code above should print out a message "Button was pressed!" once once
+the blue button is pressed. That's it! To quit the Python console press ``Ctrl+d``.
 
 
 sudo access to /usr/bin/sendiq without password
 -----------------------------------------------
 
 The app is using ``/usr/bin/sendiq`` tool, that must be run as root (via ``sudo``).
-If you want to use this app, you must make sure the user that is running the server side
-has permission to run the ``sendiq`` tool via sudo without asking for password.
+If you want to use this app, you must make sure the user that is running the rpi-sdr-replay
+has a permission to run the ``sendiq`` tool via sudo without asking for password.
 
-There are multiple ways how to achieve that. By default in Raspbian, the default **"pi"** user
-usually has ability to use sudo without password for any command.
+There are multiple ways how to achieve that.
+In Raspbian, the default user **"pi"** usually has an ability to use sudo
+without password for any command by default.
 
-If you have your own user that by default requires password for sudo, make sure you update
+If you have your own user that requires password for sudo, make sure you update
 your sudoers configuration to allow the ``/usr/bin/sendiq`` without the password:
 
     $ sudo visudo
 
-and add a line (where "youruser" is the name of the user you use):
+and add a line ("youruser" is the name of the user you use):
 
     youruser ALL=(root) NOPASSWD: /usr/bin/sendiq
 
 Note: The better practice would be to create a new sudoers config file in ``/etc/sudoers.d/`` for
 this policy with a command like ``sudo visudo -f /etc/sudoers.d/010_sendiq-nopasswd`` instead of
 editing ``/etc/sudoers`` directly like I just showed you.
-    
+
 
 Policy kit permissions to Turn Off (Shut Down) the system
 ---------------------------------------------------------
 
-The app allows you to properly turn off the Raspberry Pi system, but to be
-able to do that, the user running the application must have permissions
+The app allows you to properly turn off the Raspberry Pi system (the Black dot screen),
+but to be able to do that, the user running the application must have permissions
 to do that. To configure that permissions, do the following:
 
-Create and edit a PolicyKit permission:
+Create and edit a PolicyKit permission file:
 
     $ sudo vim /etc/polkit-1/localauthority/50-local.d/allow_all_users_to_shutdown.pkla
 
@@ -399,14 +410,16 @@ Reload the PolicyKit:
 Installation of the rpi-sdr-replay
 ==================================
 
+Once all the setup is done, you can finally install the rpi-sdr-replay!
+
 Use pip to install the binary and library:
 
     $ cd rpi-sdr-replay/  # This git repo you cloned with "git clone"
     $ pip3 install .
 
 
-Virtual env setup
-=================
+(For development) Virtual env setup
+===================================
 
 **1)** Install all necessary packages:
 
@@ -439,8 +452,15 @@ virtual env here.
     deactivate
 
 
-Debugging
-=========
+Debugging tips
+==============
+
+rpi-sdr-replay
+--------------
+
+rpi-sdr-replay prints human readable output about what's going on to stdout.
+If you want to debug it, just connect to your Raspberry via ssh and
+run the rpi-sdr-replay in the terminal and see what's going on.
 
 Bluetooth
 ---------
@@ -449,11 +469,24 @@ Bluetooth live debugging:
 
     sudo btmon
 
-Some other tips for bluetooth debugging:
+Some other tips for Bluetooth debugging:
 https://fedoraproject.org/wiki/How_to_debug_Bluetooth_problems
 
 RTL-SDR
 -------
+
+Show kernel messages after connection of the RTL-SDR dongle:
+
+    dmesg
+
+You should see something like:
+
+    [ 4772.628211] usb 2-1: new high-speed USB device number 9 using xhci_hcd
+    [ 4772.768423] usb 2-1: New USB device found, idVendor=0bda, idProduct=2838, bcdDevice= 1.00
+    [ 4772.768430] usb 2-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+    [ 4772.768433] usb 2-1: Product: RTL2838UHIDIR
+    [ 4772.768435] usb 2-1: Manufacturer: Realtek
+    [ 4772.768438] usb 2-1: SerialNumber: 00000001
 
 Test RTL-SDR dongle
 

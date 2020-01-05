@@ -2,6 +2,8 @@ language: python
 python:
     - "3.6"
     - "3.7"
+before_install:
+    - sudo apt-get -y install libdbus-glib-1-dev
 install:
     - pip install -U pip dbus-python mock flake8 coverage coveralls bluedot
 script:

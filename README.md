@@ -17,6 +17,36 @@ when it should end and then replay it on your discretion.
 Usage
 =====
 
+Rpi-sdr-replay, is composed from two parts:
+
+**Server part** is this rpi-sdr-replay application. It can record and replay radio
+signals on configurable radio frequencies (with this tool, you can record signal on
+one radio frequency and replay it on another radio frequency). The recording and
+replaying is triggered manually by user on his discretion via Bluetooth client app.  
+
+**Client part (Android smartphone app)** is a generic Blue Dot application that is available
+in Google Play Store.
+It doesn't require any special configuration in order to be used with rpi-sdr-replay
+server part. Only requirement is that the smartphone running the Blue Dot and the
+Raspberry Pi running rpi-sdr-replay are paired (how to do that is described in this doc). 
+ 
+**Main features**
+
+* You can record a radio transmission and replay it whenever you want (seconds, minutes, days, moths later). 
+* You can record a radio transmission on one frequency and replay it on another frequency.
+* You can control the recording and replaying remotely via Bluetooth.
+* You don't need Wi-Fi connection with the Raspberry Pi when using and controlling the recording/replaying.
+** The recording and replaying is done just via Bluetooth, you don't need any kind of ssh or
+   a similar connection to your Raspberry Pi system.
+* If you use a power bank to power your Raspberry Pi device, then you can walk around the world and
+  record/replay radio signals freely.
+  
+**Disclaimer:** Different radio frequencies have different terms for usage. Always consult
+your local laws and legal obligations for specific frequencies! Be careful to not cause any
+noise / jamming on any frequencies.
+For transmitting, you are supposed to use an antenna with a proper band-pass filter!
+
+
 Command line (The server part)
 -----------------------------
 
@@ -188,7 +218,7 @@ Python libraries
 *Note: Before you install python modules by pip, you should consider
 use of a python virtual environments. See next section of this readme.*
 
-    $ pip install -r requirements.txt
+    $ pip3 install -r requirements.txt
 
 
 RTL-SDR setup

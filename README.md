@@ -34,6 +34,28 @@ Note: Recordings are stored to a default location ``$HOME/sdr-recordings``
 Note: Recordings are stored to a custom directory ``/home/pi/sdr-recordings-fm/`` (the directory must exist!).
 
 
+**See help (--help/-h) for details**
+
+    $ rpi-sdr-replay --help
+    usage: rpi-sdr-replay [-h] [-f FREQUENCY] [-r RX_FREQUENCY] [-t TX_FREQUENCY]
+                          [-p] [-d DIR]
+    
+    Raspberry Pi based bluetooth controlled radio signal replayer
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -f FREQUENCY, --frequency FREQUENCY
+                            Set frequency in Hz for both RX & TX (Default:
+                            433050000)
+      -r RX_FREQUENCY, --rx-frequency RX_FREQUENCY
+                            Set RX frequency in Hz
+      -t TX_FREQUENCY, --tx-frequency TX_FREQUENCY
+                            Set TX frequency in Hz
+      -p, --allow-pairing   Allow bluetooth pairing for the first 60sec after
+                            start
+      -d DIR, --dir DIR     Directory where to store the recordings
+
+
 Graphical SmartPhone BlueDot app interface (The client part)
 ------------------------------------------------------------
 
@@ -248,8 +270,17 @@ Reload the PolicyKit:
     sudo systemctl daemon-reload
 
 
-Installation in virtual env
-===========================
+Installation of the rpi-sdr-replay
+==================================
+
+Use pip to install the binary and library:
+
+    $ cd rpi-sdr-replay/  # This git repo you cloned with "git clone"
+    $ pip3 install .
+
+
+Virtual env setup
+=================
 
 **1)** Install all necessary packages:
 

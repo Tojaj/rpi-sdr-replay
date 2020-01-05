@@ -73,10 +73,11 @@ class Replayer(object):
 
         self._recording_in_progress.terminate()
         self._recording_in_progress.wait()
-        print(f"Recording return code: {self._recording_in_progress.returncode}")
+        rc = self._recording_in_progress.returncode
+        print(f"Recording return code: {rc}")
         self._recording_in_progress = None
 
-        if self._recording_in_progress.returncode != 0:
+        if rc != 0:
             return False
 
         return True
@@ -129,10 +130,11 @@ class Replayer(object):
             raise ReplayerException("No transmission in progress!")
 
         self._transmission_in_progress.wait(timeout)
-        print(f"Replay return code: {self._transmission_in_progress.returncode}")
+        rc = self._transmission_in_progress.returncode
+        print(f"Replay return code: {rc}")
         self._transmission_in_progress = None
 
-        if self._transmission_in_progress.returncode != 0:
+        if rc != 0:
             return False
 
         return True
